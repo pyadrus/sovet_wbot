@@ -12,6 +12,8 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.types import ParseMode
 from loguru import logger
 
+from keyboards.keyboards import create_greeting_keyboard
+
 logger.add("setting/log/log.log")
 
 config = configparser.ConfigParser(empty_lines_in_values=False, allow_no_value=True)
@@ -26,15 +28,13 @@ dp = Dispatcher(bot, storage=storage)
 logging.basicConfig(level=logging.INFO)  # Логирования
 dp.middleware.setup(LoggingMiddleware())
 
-# Словарь для хранения текста от админа
-admin_texts = {}
+admin_texts = {}  # Словарь для хранения текста от админа
 
 
 def load_bot_info():
     """Загрузка информации из JSON-файла"""
     with open("bot_info.json", 'r', encoding='utf-8') as json_file:
         data = json.load(json_file)
-        # bot_info = data.get('bot_info', bot_info)
     return data
 
 
@@ -47,10 +47,9 @@ def save_bot_info(data):
 @dp.message_handler(commands=['start'])
 async def send_start(message: types.Message):
     """Обработчик команды /start"""
-    # global bot_info
-    # with open("media/photos/greeting.jpg", "rb") as photo_file:  # Загружаем фото для поста
     data = load_bot_info()
-    await bot.send_message(message.from_user.id, text=data, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    await bot.send_message(message.from_user.id, text=data, parse_mode=ParseMode.HTML, disable_web_page_preview=True,
+                           reply_markup=create_greeting_keyboard())
 
 
 @dp.message_handler(commands=['edit'])
