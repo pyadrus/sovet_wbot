@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 
 
 def create_greeting_keyboard() -> InlineKeyboardMarkup:
@@ -13,6 +13,15 @@ def create_greeting_keyboard() -> InlineKeyboardMarkup:
     greeting_keyboard.row(sign_up_button)  # Записаться
 
     return greeting_keyboard
+
+
+def create_contact_keyboard():
+    """Создает клавиатуру для отправки контакта"""
+    contact_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    send_contact_button = KeyboardButton("📱 Отправить", request_contact=True)
+
+    contact_keyboard.add(send_contact_button)
+    return contact_keyboard
 
 
 if __name__ == '__main__':
