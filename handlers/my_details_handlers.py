@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.types import ParseMode
 
 from keyboards.keyboards import create_contact_keyboard
 from services.database import count_users_by_order, insert_user_data_to_database
@@ -19,18 +16,20 @@ class MakingAnOrder(StatesGroup):
 
 
 @dp.callback_query_handler(lambda c: c.data == 'sign_up_for_classes')
-async def data_input(message: types.Message, state: FSMContext):
+async def sign_up_for_classes_handler(callback_query: types.CallbackQuery, state: FSMContext):
     """Обработчик команды /sign_up_for_classes"""
-    await state.reset_state()
-    await MakingAnOrder.data_input.set()
+    await state.finish()
+
     text_mes = ("📅 Введите дату записи в формате дд.мм.гггг:\n"
                 "Пример: 01.01.2022")
-    await bot.send_message(message.from_user.id, text_mes)
+    await bot.send_message(callback_query.from_user.id, text_mes)
+    await MakingAnOrder.data_input.set()
 
 
 @dp.message_handler(state=MakingAnOrder.data_input)
 async def agree_handler(message: types.Message, state: FSMContext):
-    await state.reset_state()
+    data = message.text
+    await state.update_data({'data': data})  # Wrap 'data' in a dictionary
     await MakingAnOrder.write_surname.set()
     text_mes = ("👥 Введите вашу фамилию (желательно кириллицей):\n"
                 "Пример: Петров, Иванова, Сидоренко")
@@ -83,7 +82,7 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
     surname = user_data.get('surname', 'не указан')
     name = user_data.get('name', 'не указан')
     phone_number = user_data.get('phone_number', 'не указан')
-    registration_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = user_data.get('date', 'не указан')  # Fix the key here
     user_id = message.from_user.id  # Получение ID аккаунта Telegram
     # Составьте подтверждающее сообщение
     text_mes = (f"🤝 Рады познакомиться {name} {surname}! 🤝\n"
@@ -91,11 +90,11 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
                 f"✅ <b>Ваше Имя:</b> {name}\n"
                 f"✅ <b>Ваша Фамилия:</b> {surname}\n"
                 f"✅ <b>Ваш номер телефона:</b> {phone_number}\n"
-                f"✅ <b>Ваша Дата регистрации:</b> {registration_date}\n\n"
+                f"✅ <b>Ваша Дата записи:</b> {date}\n\n"  # Fix the key here
                 "Вы можете изменить свои данные в меню \"Мои данные\".\n\n"
                 "Для возврата нажмите /start")
-    count = count_users_by_order()
-    insert_user_data_to_database(count + 1, user_id, name, surname, phone_number, registration_date)
+
+    insert_user_data_to_database(user_id, name, surname, phone_number, date)  # Fix the key here
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
     # Создаем клавиатуру с помощью my_details() (предполагается, что она существует)
@@ -104,4 +103,4 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
 
 def register_my_details_handler():
     """Регистрируем handlers для 'Записаться'"""
-    dp.register_message_handler(data_input)
+    dp.register_message_handler(sign_up_for_classes_handler)

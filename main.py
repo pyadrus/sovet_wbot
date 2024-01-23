@@ -1,6 +1,7 @@
 from aiogram import executor
 from loguru import logger
 
+from handlers.admin_handlers.admin_handlers import register_admin_greeting_handler
 from handlers.my_details_handlers import register_my_details_handler
 from handlers.send_start import register_handlers_send_start
 from handlers.timetable_of_classes import register_handlers_timetable_of_classes
@@ -19,6 +20,7 @@ def main() -> None:
     register_handlers_timetable_of_classes()
     register_handlers_send_start()
     register_my_details_handler()
+    register_admin_greeting_handler()
 
 
 if __name__ == '__main__':

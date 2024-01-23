@@ -1,10 +1,12 @@
 import os
 
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from aiogram.types import ParseMode
 from loguru import logger
 
 from keyboards.keyboards import create_greeting_keyboard
+from services.database import recording_data_of_users_who_launched_the_bot
 from services.services import load_bot_info, save_bot_info
 from system.dispatcher import ADMIN_USER_ID, dp, bot, admin_texts
 
@@ -12,8 +14,22 @@ logger.add("setting/log/log.log")
 
 
 @dp.message_handler(commands=['start'])
-async def send_start(message: types.Message):
+async def send_start(message: types.Message, state: FSMContext):
     """Обработчик команды /start"""
+    await state.finish()  # Завершаем текущее состояние машины состояний
+    await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
+    # Получаем информацию о пользователе
+    user_id = message.from_user.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
+    join_date = message.date.strftime("%Y-%m-%d %H:%M:%S")
+
+    logger.info(f"Пользователь {username} ({user_id}) запустил бота в {join_date}")
+
+    # Записываем информацию о пользователе в базу данных
+    recording_data_of_users_who_launched_the_bot(user_id, username, first_name, last_name, join_date)
+
     data = load_bot_info(file_name='services/bot_info.json')
     await bot.send_message(message.from_user.id, text=data, parse_mode=ParseMode.HTML, disable_web_page_preview=True,
                            reply_markup=create_greeting_keyboard())
