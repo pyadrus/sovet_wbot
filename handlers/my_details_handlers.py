@@ -28,8 +28,8 @@ async def sign_up_for_classes_handler(callback_query: types.CallbackQuery, state
 
 @dp.message_handler(state=MakingAnOrder.data_input)
 async def agree_handler(message: types.Message, state: FSMContext):
-    data = message.text
-    await state.update_data({'data': data})  # Wrap 'data' in a dictionary
+    data_input = message.text
+    await state.update_data({'data_input': data_input})  # Wrap 'data' in a dictionary
     await MakingAnOrder.write_surname.set()
     text_mes = ("👥 Введите вашу фамилию (желательно кириллицей):\n"
                 "Пример: Петров, Иванова, Сидоренко")
@@ -82,7 +82,7 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
     surname = user_data.get('surname', 'не указан')
     name = user_data.get('name', 'не указан')
     phone_number = user_data.get('phone_number', 'не указан')
-    date = user_data.get('date', 'не указан')  # Fix the key here
+    data_input = user_data.get('data_input', 'не указан')  # Fix the key here
     user_id = message.from_user.id  # Получение ID аккаунта Telegram
     # Составьте подтверждающее сообщение
     text_mes = (f"🤝 Рады познакомиться {name} {surname}! 🤝\n"
@@ -90,10 +90,10 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
                 f"✅ Ваше Имя: {name}\n"
                 f"✅ Ваша Фамилия: {surname}\n"
                 f"✅ Ваш номер телефона: {phone_number}\n"
-                f"✅ Ваша Дата записи: {date}\n\n"  # Fix the key here
+                f"✅ Ваша Дата записи: {data_input}\n\n"  # Fix the key here
                 "Для возврата нажмите /start")
 
-    insert_user_data_to_database(user_id, name, surname, phone_number, date)  # Fix the key here
+    insert_user_data_to_database(user_id, name, surname, phone_number, data_input)  # Fix the key here
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
 
@@ -104,7 +104,7 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
                       f"✅ Имя: {name}\n"
                       f"✅ Фамилия: {surname}\n"
                       f"✅ Номер телефона: {phone_number}\n"
-                      f"✅ Дата записи: {date}\n\n")
+                      f"✅ Дата записи: {data_input}\n\n")
     await bot.send_message(chat_id=535185511, text=text_mes_admin)  # Отправка данных администратору бота
 
 
