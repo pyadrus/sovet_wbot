@@ -12,7 +12,7 @@ from system.dispatcher import dp, bot
 
 @dp.callback_query_handler(lambda c: c.data == 'timetable_of_classes')
 async def timetable_of_classes(message: types.Message):
-    """Обработчик команды /start"""
+    """Обработчик команды /timetable_of_classes"""
     greeting_keyboard = InlineKeyboardMarkup()
     sign_up_button = InlineKeyboardButton(text='📝 Записаться на занятия',
                                           callback_data='sign_up_for_classes')
@@ -31,11 +31,11 @@ class EDIT(StatesGroup):
 
 @dp.message_handler(commands=['edit_timetable'])
 async def edit_info_timetable(message: types.Message):
-    """Обработчик команды /edit (только для админа)"""
+    """Обработчик команды /edit_timetable (только для админа)"""
     logger.info(f"Админ {ADMIN_USER_ID} попытался редактировать информацию.")
     if message.from_user.id == int(ADMIN_USER_ID):
         await message.answer("Введите новый текст, используя разметку HTML.")
-        # admin_texts[message.from_user.id] = True
+
         await EDIT.edit.set()
     else:
         await message.reply("У вас нет прав на выполнение этой команды.")

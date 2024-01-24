@@ -24,13 +24,23 @@ def create_contact_keyboard():
     return contact_keyboard
 
 
-def admin_create_greeting_keyboard():
-    """Создаем клавиатуру для приветственного сообщения 👋 для админов"""
+def admin_create_greeting_keyboard() -> InlineKeyboardMarkup:
+    """
+    Создаем клавиатуру для приветственного сообщения 👋 для админов:
+
+    Получить пользователей запустивших бота - get_users_who_launched_the_bot
+
+    Получить список зарегистрированных пользователей - get_a_list_of_users_registered_in_the_bot
+
+    Отправить сообщение пользователям бота - send_a_message_to_bot_users
+
+    Отправить изображение пользователям бота - send_an_image_to_bot_users
+    """
     greeting_keyboard = InlineKeyboardMarkup()
-    users_who_launched_button = InlineKeyboardButton(text='Получить пользователей запустивших бота',
+    users_who_launched_button = InlineKeyboardButton(text='Список пользователей запустивших бота',
                                                      callback_data='get_users_who_launched_the_bot')
     list_of_registered_users_button = InlineKeyboardButton(
-        text='Получить список зарегистрированных пользователей',
+        text='Список записавшихся пользователей',
         callback_data='get_a_list_of_users_registered_in_the_bot')
     send_message_button = InlineKeyboardButton(text='Отправить сообщение пользователям бота',
                                                callback_data="send_a_message_to_bot_users")

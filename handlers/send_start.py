@@ -2,6 +2,7 @@ import os
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import ParseMode
 from loguru import logger
 
@@ -35,25 +36,30 @@ async def send_start(message: types.Message, state: FSMContext):
                            reply_markup=create_greeting_keyboard())
 
 
+class EDITSTART(StatesGroup):
+    edit_start = State()
+
+
 @dp.message_handler(commands=['edit'])
 async def edit_info(message: types.Message):
     """Обработчик команды /edit (только для админа)"""
     logger.info(f"Админ {ADMIN_USER_ID} попытался редактировать информацию.")
     if message.from_user.id == int(ADMIN_USER_ID):
         await message.answer("Введите новый текст, используя разметку HTML.")
-        admin_texts[message.from_user.id] = True
+        await EDITSTART.edit_start.set()
     else:
         await message.reply("У вас нет прав на выполнение этой команды.")
 
 
-@dp.message_handler(lambda message: message.from_user.id == ADMIN_USER_ID and message.from_user.id in admin_texts)
-async def update_info(message: types.Message):
+@dp.message_handler(state=EDITSTART.edit_start)
+async def update_info(message: types.Message, state: FSMContext):
     """Обработчик текстовых сообщений (для админа, чтобы обновить информацию)"""
     text = message.html_text
     bot_info = text
     admin_texts.pop(message.from_user.id, None)  # Убираем режим редактирования
     save_bot_info(file_name='services/bot_info.json', data=bot_info)  # Сохраняем информацию в JSON
     await message.reply("Информация обновлена.", parse_mode=ParseMode.HTML)
+    await state.finish()
 
 
 PHOTO_FOLDER = 'media/photos/'  # Путь к папке, где будет храниться фото

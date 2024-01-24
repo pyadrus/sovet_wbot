@@ -36,25 +36,23 @@ async def admin_send_start(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, text=data, reply_markup=greeting_keyboard, parse_mode=ParseMode.HTML)
 
 
-# Функция для создания файла Excel с данными заказов
 def create_excel_file(orders):
+    """Функция для создания файла Excel с данными зарегистрированных пользователей"""
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     # Заголовки столбцов
     sheet['A1'] = 'ID аккаунта пользователя'
     sheet['B1'] = 'Имя'
     sheet['C1'] = 'Фамилия'
-    sheet['D1'] = 'Город'
-    sheet['E1'] = 'Номер телефона'
-    sheet['F1'] = 'Дата регистрации'
+    sheet['D1'] = 'Номер телефона'
+    sheet['E1'] = 'Дата регистрации'
     # Заполнение данными заказов
     for index, order in enumerate(orders, start=2):
         sheet.cell(row=index, column=1).value = order[0]  # ID аккаунта пользователя
         sheet.cell(row=index, column=2).value = order[1]  # Имя
         sheet.cell(row=index, column=3).value = order[2]  # Фамилия
-        sheet.cell(row=index, column=4).value = order[3]  # Город
-        sheet.cell(row=index, column=5).value = order[4]  # Номер телефона
-        sheet.cell(row=index, column=6).value = order[5]  # Дата регистрации
+        sheet.cell(row=index, column=5).value = order[3]  # Номер телефона
+        sheet.cell(row=index, column=6).value = order[4]  # Дата регистрации
 
     return workbook
 
