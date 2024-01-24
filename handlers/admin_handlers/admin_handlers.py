@@ -65,7 +65,7 @@ async def export_data(message: types.Message, state: FSMContext):
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
     try:
-        if message.from_user.id not in [535185511, 301634256]:
+        if message.from_user.id not in [535185511, 675327354]:
             await message.reply('У вас нет доступа к этой команде.')
             return
         # Подключение к базе данных SQLite
@@ -113,7 +113,7 @@ async def get_users_who_launched_the_bot(message: types.Message, state: FSMConte
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
     try:
-        if message.from_user.id not in [535185511, 301634256]:
+        if message.from_user.id not in [535185511, 675327354]:
             await message.reply('У вас нет доступа к этой команде.')
             return
         # Подключение к базе данных SQLite
@@ -147,7 +147,7 @@ async def send_an_image_to_bot_users(message: types.Message, state: FSMContext):
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
     try:
-        if message.from_user.id not in [535185511, 301634256]:
+        if message.from_user.id not in [535185511, 675327354]:
             await message.reply('У вас нет доступа к этой команде.')
             return
         await bot.send_message(message.from_user.id, text="Загрузите изображение для рассылки:")
@@ -194,7 +194,7 @@ async def send_a_message_to_bot_users(message: types.Message, state: FSMContext)
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
     try:
-        if message.from_user.id not in [535185511, 301634256]:
+        if message.from_user.id not in [535185511, 675327354]:
             await message.reply('У вас нет доступа к этой команде.')
             return
         await bot.send_message(message.from_user.id, text="Введите текст для рассылки:")

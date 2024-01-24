@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 from keyboards.keyboards import create_contact_keyboard
-from services.database import count_users_by_order, insert_user_data_to_database
+from services.database import insert_user_data_to_database
 from system.dispatcher import dp, bot
 
 
@@ -87,18 +87,25 @@ async def handle_confirmation(message: types.Message, state: FSMContext):
     # Составьте подтверждающее сообщение
     text_mes = (f"🤝 Рады познакомиться {name} {surname}! 🤝\n"
                 "Ваши регистрационные данные:\n\n"
-                f"✅ <b>Ваше Имя:</b> {name}\n"
-                f"✅ <b>Ваша Фамилия:</b> {surname}\n"
-                f"✅ <b>Ваш номер телефона:</b> {phone_number}\n"
-                f"✅ <b>Ваша Дата записи:</b> {date}\n\n"  # Fix the key here
-                "Вы можете изменить свои данные в меню \"Мои данные\".\n\n"
+                f"✅ Ваше Имя: {name}\n"
+                f"✅ Ваша Фамилия: {surname}\n"
+                f"✅ Ваш номер телефона: {phone_number}\n"
+                f"✅ Ваша Дата записи: {date}\n\n"  # Fix the key here
                 "Для возврата нажмите /start")
 
     insert_user_data_to_database(user_id, name, surname, phone_number, date)  # Fix the key here
     await state.finish()  # Завершаем текущее состояние машины состояний
     await state.reset_state()  # Сбрасываем все данные машины состояний, до значения по умолчанию
-    # Создаем клавиатуру с помощью my_details() (предполагается, что она существует)
-    await bot.send_message(message.from_user.id, text_mes)
+
+    await bot.send_message(message.from_user.id, text_mes)  # Сообщение пользователю
+
+    text_mes_admin = (f"Пользователь {name} {surname} записался на занятие\n"
+                      "Регистрационные данные пользователя:\n\n"
+                      f"✅ Имя: {name}\n"
+                      f"✅ Фамилия: {surname}\n"
+                      f"✅ Номер телефона: {phone_number}\n"
+                      f"✅ Дата записи: {date}\n\n")
+    await bot.send_message(chat_id=535185511, text=text_mes_admin)  # Отправка данных администратору бота
 
 
 def register_my_details_handler():

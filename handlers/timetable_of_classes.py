@@ -1,19 +1,28 @@
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import ParseMode
 from loguru import logger
 
 from services.services import load_bot_info, save_bot_info
 from system.dispatcher import ADMIN_USER_ID, admin_texts
 from system.dispatcher import dp, bot
-from aiogram.dispatcher import FSMContext
 
 
 @dp.callback_query_handler(lambda c: c.data == 'timetable_of_classes')
 async def timetable_of_classes(message: types.Message):
     """Обработчик команды /start"""
+    greeting_keyboard = InlineKeyboardMarkup()
+    sign_up_button = InlineKeyboardButton(text='📝 Записаться на занятия',
+                                          callback_data='sign_up_for_classes')
+    greeting_keyboard.row(sign_up_button)  # Записаться
     data = load_bot_info(file_name='services/timetable_info.json')
-    await bot.send_message(message.from_user.id, text=data, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    await bot.send_message(message.from_user.id,
+                           text=data,
+                           parse_mode=ParseMode.HTML,
+                           disable_web_page_preview=True,
+                           reply_markup=greeting_keyboard)
 
 
 class EDIT(StatesGroup):
